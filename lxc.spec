@@ -17,8 +17,7 @@ Requires: lxc-config
 Requires: lxc-lib
 Requires: lxc-doc
 Requires: lxc-data
-BuildRequires : automake
-BuildRequires : automake-dev
+BuildRequires : meson
 BuildRequires : doxygen
 BuildRequires : gettext-bin
 BuildRequires : gnutls-dev
@@ -30,8 +29,7 @@ BuildRequires : m4
 BuildRequires : pkg-config-dev
 BuildRequires : pkgconfig(libseccomp)
 BuildRequires : python3-dev
-BuildRequires : sed
-#Patch1: CVE-2015-1335.patch
+BuildRequires : sed openssl-dev
 
 %description
 Containers are insulated areas inside a system, which have their own namespace
@@ -112,14 +110,34 @@ python components for the lxc package.
 #%%patch1 -p1
 
 %build
-%reconfigure --disable-static --with-systemdsystemunitdir=/usr/lib/systemd/system \
---with-init-script=systemd
-make V=1  %{?_smp_mflags}
+export CFLAGS="$CFLAGS -O3 -Ofast -falign-functions=32 -ffat-lto-objects -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -mprefer-vector-width=256 "
+export FCFLAGS="$FFLAGS -O3 -Ofast -falign-functions=32 -ffat-lto-objects -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -mprefer-vector-width=256 "
+export FFLAGS="$FFLAGS -O3 -Ofast -falign-functions=32 -ffat-lto-objects -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -mprefer-vector-width=256 "
+export CXXFLAGS="$CXXFLAGS -O3 -Ofast -falign-functions=32 -ffat-lto-objects -flto=auto -fno-semantic-interposition -fstack-protector-strong -fzero-call-used-regs=used -mprefer-vector-width=256 "
+CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" LDFLAGS="$LDFLAGS" meson --libdir=lib64 --prefix=/usr --buildtype=plain \
+	-D examples=false \
+	-D man=false \
+	-D tools=true \
+	-D commands=true \
+	-D capabilities=true \
+	-D openssl=true \
+	-D selinux=false \
+	-D apparmor=false \
+	-D seccomp=false \
+	-D memfd-rexec=true \
+  -D thread-safety=true \
+	-D sd-bus=auto \
+	-D tests=false \
+	-D init-script=systemd \
+	-D systemd-unitdir=%{_unitdir} \
+	-D distrosysconfdir=sysconfig \
+	-D pam-cgroup=true \
+	-D runtime-path=%{_rundir} builddir
 
+ninja -v -C builddir
 
 %install
-rm -rf %{buildroot}
-%make_install
+DESTDIR=%{buildroot} ninja -C builddir install
 mkdir -p %{buildroot}/usr/lib/tmpfiles.d
 install -m 0644 %{SOURCE1} %{buildroot}/usr/lib/tmpfiles.d/lxc.conf
 
@@ -236,7 +254,6 @@ install -m 0644 %{SOURCE1} %{buildroot}/usr/lib/tmpfiles.d/lxc.conf
 
 %files doc
 %defattr(-,root,root,-)
-%doc /usr/share/doc/lxc/*
 
 %files lib
 %defattr(-,root,root,-)
