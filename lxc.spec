@@ -31,7 +31,7 @@ BuildRequires : pkg-config-dev
 BuildRequires : pkgconfig(libseccomp)
 BuildRequires : python3-dev
 BuildRequires : sed
-Patch1: CVE-2015-1335.patch
+#Patch1: CVE-2015-1335.patch
 
 %description
 Containers are insulated areas inside a system, which have their own namespace
@@ -109,7 +109,7 @@ python components for the lxc package.
 
 %prep
 %setup -q -n lxc-1.1.3
-%patch1 -p1
+#%%patch1 -p1
 
 %build
 %reconfigure --disable-static --with-systemdsystemunitdir=/usr/lib/systemd/system \
