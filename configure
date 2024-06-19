@@ -1,0 +1,8 @@
+--default-library=static
+-Dsystemd-unitdir=/usr/lib/systemd/system
+-Dinit-script=systemd
+-Ddistrosysconfdir=/etc/default
+-Dtools-multicall=true
+-Dapparmor=false
+-Dselinux=false
+-Dman=false
