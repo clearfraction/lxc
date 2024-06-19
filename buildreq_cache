@@ -1,0 +1,11 @@
+6.0.0a
+dbus-dev
+docbook-utils
+libcap-dev
+libseccomp-dev
+openssl-dev
+pkgconfig(dbus-1)
+pkgconfig(libapparmor)
+pkgconfig(libcap)
+pkgconfig(libseccomp)
+pkgconfig(libselinux)
