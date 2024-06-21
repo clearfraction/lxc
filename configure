@@ -1,4 +1,5 @@
 --default-library=static
+--prefix=/opt/3rd-party/bundles/clearfraction/usr
 -Dsystemd-unitdir=/usr/lib/systemd/system
 -Dinit-script=systemd
 -Ddistrosysconfdir=/etc/default
